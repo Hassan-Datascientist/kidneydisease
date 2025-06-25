@@ -5,8 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# Load credentials from the JSON key file
-key_path = os.path.join(os.path.dirname(__file__), "kidneydisease.json")
+key_path = "/etc/secrets/kidneydisease.json"
 credentials = service_account.Credentials.from_service_account_file(key_path)
 
 # Create BigQuery client
