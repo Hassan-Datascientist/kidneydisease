@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Result</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px auto;
+            max-width: 600px;
+            padding: 0 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+        a {
+            display: inline-block;
+            margin-top: 25px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>✅ Prediction Result</h2>
+        <p><strong>Predicted Cluster:</strong> <span style="font-size: 24px; color: #2980b9;">{{ cluster }}</span></p>
+
+        <canvas id="clusterChart" width="300" height="300"></canvas>
+
+        <a href="/">Try Another Prediction</a>
+    </div>
+
+    <script>
+        const predicted = parseInt("{{ cluster }}");
+        const labels = ["Cluster 0", "Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"];
+        const backgroundColors = labels.map((_, i) =>
+            i === predicted ? "#3498db" : "#bdc3c7"
+        );
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Prediction',
+                data: labels.map((_, i) => i === predicted ? 1 : 0.2),
+                backgroundColor: backgroundColors,
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(document.getElementById('clusterChart'), {
+            type: 'doughnut',
+            data: data,
+            options: {
+                plugins: {
+                    legend: { display: true },
+                    tooltip: { enabled: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
