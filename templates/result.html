@@ -1,74 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Prediction Result</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px auto;
-            max-width: 600px;
-            padding: 0 20px;
-            background-color: #f0f4f8;
-            color: #333;
-            text-align: center;
-        }
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-            margin-top: 40px;
-        }
-        a {
-            display: inline-block;
-            margin-top: 25px;
-            text-decoration: none;
-            background-color: #3498db;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Prediction Result with Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background-color: #f4f7f8;
+      color: #444;
+    }
+    h2 {
+      text-align: center;
+      color: #34495e;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #2980b9;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    canvas {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+    }
+  </style>
 </head>
 <body>
-    <div class="card">
-        <h2>✅ Prediction Result</h2>
-        <p><strong>Predicted Cluster:</strong> <span style="font-size: 24px; color: #2980b9;">{{ cluster }}</span></p>
+  <h2>Kidney Disease Cluster Prediction Result</h2>
+  <p>Predicted Cluster: <strong>{{ cluster }}</strong></p>
 
-        <canvas id="clusterChart" width="300" height="300"></canvas>
+  <canvas id="clusterChart" width="600" height="300"></canvas>
 
-        <a href="/">Try Another Prediction</a>
-    </div>
+  <script>
+    const ctx = document.getElementById('clusterChart').getContext('2d');
+    const clusterData = {{ cluster_counts | tojson }};
+    const labels = Object.keys(clusterData);
+    const counts = Object.values(clusterData);
 
-    <script>
-        const predicted = parseInt("{{ cluster }}");
-        const labels = ["Cluster 0", "Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"];
-        const backgroundColors = labels.map((_, i) =>
-            i === predicted ? "#3498db" : "#bdc3c7"
-        );
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Number of Patients per Cluster',
+          data: counts,
+          backgroundColor: 'rgba(41, 128, 185, 0.7)',
+          borderColor: 'rgba(41, 128, 185, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+  </script>
 
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: 'Prediction',
-                data: labels.map((_, i) => i === predicted ? 1 : 0.2),
-                backgroundColor: backgroundColors,
-                borderWidth: 1
-            }]
-        };
-
-        new Chart(document.getElementById('clusterChart'), {
-            type: 'doughnut',
-            data: data,
-            options: {
-                plugins: {
-                    legend: { display: true },
-                    tooltip: { enabled: false }
-                }
-            }
-        });
-    </script>
+  <a href="{{ url_for('home') }}">Try again</a>
 </body>
 </html>

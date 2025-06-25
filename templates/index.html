@@ -1,75 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Kidney Disease Cluster Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px auto;
-            max-width: 600px;
-            padding: 0 20px;
-            background-color: #f7f9fc;
-            color: #333;
-        }
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        form {
-            background: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 8px 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        input[type="submit"] {
-            margin-top: 20px;
-            width: 100%;
-            background-color: #2980b9;
-            border: none;
-            padding: 12px;
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        input[type="submit"]:hover {
-            background-color: #1c5980;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kidney Disease Cluster Prediction</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 40px auto;
+      max-width: 800px;
+      padding: 0 20px;
+      background-color: #f4f7f8;
+      color: #444;
+    }
+
+    h2 {
+      text-align: center;
+      color: #34495e;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 30px;
+    }
+
+    .form-column {
+      flex: 1 1 45%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #2c3e50;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 14px;
+      margin-top: 8px;
+      border: 1.5px solid #b0bec5;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: #2980b9;
+      outline: none;
+    }
+
+    input[type="submit"] {
+      margin-top: 30px;
+      width: 100%;
+      background-color: #2980b9;
+      border: none;
+      padding: 15px;
+      color: white;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(41, 128, 185, 0.4);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #1c5980;
+      box-shadow: 0 8px 20px rgba(28, 89, 128, 0.6);
+    }
+
+    .flash-message {
+      color: red;
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .form-column {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h2>Kidney Disease Cluster Prediction</h2>
-    <form action="/predict" method="post">
+  <h2>Kidney Disease Cluster Prediction</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-message">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <form id="predictForm" action="/predict" method="post" novalidate>
+    <div class="form-row">
+      <div class="form-column">
         <label for="age">Age:</label>
-        <input type="number" step="any" name="age" id="age" required>
+        <input type="number" name="age" id="age" min="0" max="100" step="any" required placeholder="Enter age">
 
         <label for="bp">Blood Pressure (bp):</label>
-        <input type="number" step="any" name="bp" id="bp" required>
+        <input type="number" name="bp" id="bp" min="0" step="any" required placeholder="Enter blood pressure">
 
         <label for="bgr">Blood Glucose (bgr):</label>
-        <input type="number" step="any" name="bgr" id="bgr" required>
+        <input type="number" name="bgr" id="bgr" min="0" step="any" required placeholder="Enter blood glucose">
+      </div>
 
+      <div class="form-column">
         <label for="bu">Blood Urea (bu):</label>
-        <input type="number" step="any" name="bu" id="bu" required>
+        <input type="number" name="bu" id="bu" min="0" step="any" required placeholder="Enter blood urea">
 
         <label for="sc">Serum Creatinine (sc):</label>
-        <input type="number" step="any" name="sc" id="sc" required>
+        <input type="number" name="sc" id="sc" min="0" step="any" required placeholder="Enter serum creatinine">
+      </div>
+    </div>
 
-        <input type="submit" value="Predict Cluster">
-    </form>
+    <input type="submit" value="Predict Cluster">
+  </form>
+
+  <script>
+    // Autofocus age field on page load
+    window.onload = function () {
+      document.getElementById('age').focus();
+    };
+
+    // Form validation before submit
+    document.getElementById('predictForm').addEventListener('submit', function (e) {
+      const age = parseFloat(document.getElementById('age').value);
+      if (isNaN(age) || age > 100 || age < 0) {
+        alert("Age must be between 0 and 100.");
+        document.getElementById('age').focus();
+        e.preventDefault();
+        return false;
+      }
+
+      // Optional: Add similar validation for other fields if needed
+    });
+  </script>
 </body>
 </html>
